@@ -98,22 +98,47 @@ bool voting_read_ballots(std::istream& r, int ballots [max_num_ballots][max_num_
 string voting_eval_winner(int ballots [max_num_ballots][max_num_candidates], int num_ballots, int num_candidates) {
     //boolean to determine if there is a winner or winners after the current round
     //stores the number of votes a candidate receives in a round
+    //-1 means they were eliminated in a previous round
     int num_votes_per_candidate [max_num_candidates];
 
     //values to keep track of most and least amount of votes for a round
-    int most_votes;
-    int least_votes;
+    int most_votes = 0;
+    int least_votes = max_num_ballots + 1;
 
     //stores the index we are considering for each ballot
     int ballot_positions [max_num_ballots];
     
-    while(!finished)
+    //store the winner(s) and loser(s) for one round of voting as well as those
+    //permanently eliminated from voting 
+    int winners_this_round [num_candidates];
+    int losers_this_round [num_candidates - 1];
+    int eliminated_candidates [num_candidates - 1];
+    
+    //go through ballots and determine which of the remaining candidates each 
+    //ballot is voting for this round
     for(int i = 0; i < num_ballots; i++) {
-        for(int j = 0; j < num_candidates; j++) {
-            int candidate_voted_for = ballots[i][j];
-            num_votes_per_candidate[candidate_voted_for]++;
+        int index_of_ballot = ballot_positions [i];
+        int candidate_voted_for = ballots[i][index_of_ballot];
+        num_votes_per_candidate[candidate_voted_for]++;
+    }
+    
+    int vote_total_for_candidate;
+    //Determine max and min # of votes
+    for (int i = 0; i < num_candidates; i++) {
+        vote_total_for_candidate = num_votes_per_candidate[i];
+        if (vote_total_for_candidate != -1) {
+            if (vote_total_for_candidate > most_votes)
+                most_votes = vote_total_for_candidate;
+            if (vote_total_for_candidate < least_votes)
+                least_votes = vote_total_for_candidate;
         }
     }
+    
+    //test for case where all remaining candidates are tied
+    if (most_votes == least_votes){
+        //we have a tie between all remaining candidates.
+    }
+        
 }
 
 
